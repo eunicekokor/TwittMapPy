@@ -11,9 +11,9 @@
   </head>
   <body>
     <h3>Tweet Map App</h3>
-    <select id="drop">
+    <select id="dropdown">
       <option value="obama">obama</option>
-      <option  value="trump">trump</option>
+      <option value="trump">trump</option>
       <option value="clinton">clinton</option>
     </select>
     <div id="map"></div>
@@ -30,11 +30,18 @@
           map: map
         });
 
-        document.getElementById("query").onchange = function(){
+        document.getElementById("dropdown").onchange = function(){
           keyword = this.value;
           reQuery(keyword);
         }
 
+      }
+      function addMarker(tweet){
+        var pos = {lat: tweets.coordinates[1], lng: tweets.coordinates[1]};
+        var marker = new google.maps.Marker({
+          position: pos,
+          map: map
+        });
       }
       function reQuery(param){
 
@@ -42,11 +49,20 @@
         console.log(this.responseText);
         // var search_str = "haiku";
         var oReq = new XMLHttpRequest();
-        oReq.addEventListener("load", reqListener);
+        oReq.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //deleteMarkers();
+            var obj = JSON.parse(this.responseText);
+            var tweets = obj.hits.hits
+            for(var i = 0; i < tweets.length; i++){
+                addContent(tweets[i])
+            }
+          }
+        //oReq.addEventListener("load", reqListener);
       // var url = "http://localhost:3000/tweets/getTweets?search="+search_str;
       // console.log(url);
-      oReq.open("GET", "/" + param);
-      oReq.send();
+        oReq.open("GET", "/" + param, true);
+        oReq.send();
       }
 
     </script>
