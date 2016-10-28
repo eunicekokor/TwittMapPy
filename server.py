@@ -73,29 +73,31 @@ access_token_secret="1xc2XNwgXhCEm34NbhDeuIEnPuDAqHkUrG2Wpp7W1p2ge"
 consumer_key="euXCzLT4bHep6PMSwFha1X610"
 consumer_secret="czLjLODWigoHvUxdXR7KhPoucrTP36HVxZtK19wqDATpQjM3tW"
 
+def add_rest(json_data, data):
+  data["name"]=json_data['user']['name']
+  data["text"]=json_data['text']
+  data["created_at"]=json_data['created_at']
+  print (data)
+  res=es.index(index="tweet", doc_type='tweet', body=data)
+
 class StdOutListener(StreamListener):
 
   def on_data(self, doc_data):
-      print (doc_data)
-      json_data=json.loads(doc_data)
-      try:
-          data={}
-          if json_data['coordinates'] is not None:
-              data["lat"]=json_data['coordinates']['coordinates'][0]
-              data["longtitude"]=longtitude=json_data['coordinates']['coordinates'][1]
-          elif json_data['place'] is not None:
-              data["lat"]=json_data['place']['bounding_box']['coordinates'][0][0][0]
-              data["longtitude"]=json_data['place']['bounding_box']['coordinates'][0][0][1]
-          else:
-              return
-          data["text"]=json_data['text']
-          data["name"]=json_data['user']['name']
-          data["created_at"]=json_data['created_at']
-          print data
-          res=es.index(index="tweet", doc_type='tweet', body=data)
-          print (res['created'])
-      except:
-          return
+    json_data=json.loads(doc_data)
+    try:
+        data={}
+        if json_data['coordinates'] is not None:
+            data["coordinates"]= (json_data['coordinates']['coordinates'][0],data["longtitude"],json_data['coordinates']['coordinates'][1])
+            add_rest(json_data, data)
+
+        elif json_data['place'] is not None:
+            data["coordinates"]=(json_data['place']['bounding_box']['coordinates'][0][0][0],json_data['place']['bounding_box']['coordinates'][0][0][1])
+            add_rest(json_data, data)
+        else:
+            return
+
+    except:
+        return
 
   def on_error(self, status):
       print status
@@ -103,10 +105,10 @@ class StdOutListener(StreamListener):
 if __name__ == "__main__":
     while True:
         try:
-            l = StdOutListener()
+            listener = StdOutListener()
             auth = OAuthHandler(consumer_key, consumer_secret)
             auth.set_access_token(access_token, access_token_secret)
-            stream = Stream(auth, l)
+            stream = Stream(auth, listener)
             stream.filter(track=['haiku', 'poem', 'poetry', 'obama', 'clinton'])
 
         except:
