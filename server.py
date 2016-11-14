@@ -57,7 +57,7 @@
 #        stream.filter(track=['sports', 'music', 'hillary'])
 
 import json
-from elasticsearch import Elasticsearch as es
+from elasticsearch import Elasticsearch
 import tweepy
 import pprint
 from tweepy.streaming import StreamListener
@@ -66,7 +66,13 @@ from tweepy import Stream
 import sys
 import datetime
 import time
-from TwitterAPI import TwitterAPI
+import certifi
+# from TwitterAPI import TwitterAPI
+
+# es = Elasticsearch([{ 'host': 'http://tweetmap-env.bmcf8muqyd.us-west-2.elasticbeanstalk.com/', 'port': 443}])
+host = "search-mytweetmap-zvx2ulax7nvfnzu2dmpixdybqu.us-east-1.es.amazonaws.com"
+elasticcollect = Elasticsearch()
+# print (es.info())
 
 access_token="28203065-m0YfUbocnLSgTzmfV5kYX7FIhLHo71s9Pb36yu3jB"
 access_token_secret="1xc2XNwgXhCEm34NbhDeuIEnPuDAqHkUrG2Wpp7W1p2ge"
@@ -77,8 +83,10 @@ def add_rest(json_data, data):
   data["name"]=json_data['user']['name']
   data["text"]=json_data['text']
   data["created_at"]=json_data['created_at']
+  print ("printing data...\n")
   print (data)
-  res=es.index(index="tweet", doc_type='tweet', body=data)
+  newdata = {"name": "eunicode", "time": time.now()}
+  res=elasticcollect.index(index="data", doc_type='tweets', body=data, host=host)
 
 class StdOutListener(StreamListener):
 
@@ -100,7 +108,7 @@ class StdOutListener(StreamListener):
         return
 
   def on_error(self, status):
-      print status
+      print (status)
 
 if __name__ == "__main__":
     while True:
