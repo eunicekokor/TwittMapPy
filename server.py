@@ -6,7 +6,7 @@ from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 import sys
-import datetime
+from datetime import *
 import time
 import certifi
 from requests_aws4auth import AWS4Auth
@@ -45,43 +45,47 @@ print (es.info())
 class StdOutListener(StreamListener):
   def on_data(self, doc_data):
     json_data=json.loads(doc_data)
-    try:
-      data={}
-      if json_data['coordinates'] is not None:
-        print ("got here2!!!")
-        data["coordinates"]= (json_data['coordinates']['coordinates'][0],json_data['coordinates']['coordinates'][1])
-        data["name"]=json_data['user']['name']
-        data["text"]=json_data['text']
-        data["created_at"]=json_data['created_at']
-        print ("printing data...\n")
-        print (data)
+    # try:
+    data={}
+    print(json_data)
+    if json_data['coordinates'] is not None:
+      print ("got here2!!!")
+      # print(json_data)
+      data["coordinates"]= (json_data['coordinates']['coordinates'][0],json_data['coordinates']['coordinates'][1])
+      data["name"]=json_data['user']['name']
+      data["text"]=json_data['text']
+      data["created_at"]=json_data['created_at']
+      print ("printing data...\n")
+      print (data)
 
-        res = es.index(index="test", doc_type='tweet', id=time.now(), body=data)
+      res = es.index(index="test", doc_type='tweet', body=data)
 
-        print(res['created'])
-        print ("hell oworld")
-        res2 = es.get(index="test", doc_type='tweet')
-        print ("printing {}".format("test"))
-      elif json_data['place'] is not None:
-        print ("got here2!!!")
-        data["coordinates"]= (json_data['place']['bounding_box']['coordinates'][0][0][0],json_data['place']['bounding_box']['coordinates'][0][0][1])
-        data["name"]=json_data['user']['name']
-        data["text"]=json_data['text']
-        data["created_at"]=json_data['created_at']
-        print ("printing data...\n")
-        print (data)
+      print(res['created'])
+      print ("hell oworld")
+      # res2 = es.get(index="test", doc_type='tweet')
+      # print ("printing {}".format("test"))
+    elif json_data['place'] is not None:
+      print ("got here2!!!")
+      # print(json_data)
+      data["coordinates"]= (json_data['place']['bounding_box']['coordinates'][0][0][0],json_data['place']['bounding_box']['coordinates'][0][0][1])
+      data["name"]=json_data['user']['name']
+      data["text"]=json_data['text']
+      data["created_at"]=json_data['created_at']
+      print ("printing data...\n")
+      print (data)
 
-        res = es.index(index="test", doc_type='tweet', id=time.now(), body=data)
+      res = es.index(index="test", doc_type='tweet', body=data)
 
-        print(res['created'])
-        print ("hell oworld")
-        res2 = es.get(index="test", doc_type='tweet')
-        print ("printing {}".format("test"))
-      else:
-          return
+      print(res['created'])
+      print ("hell oworld")
+      # res2 = es.get(index="test", doc_type='tweet')
+      # print ("printing {}".format("test"))
+    else:
+        return
 
-    except:
-      return
+    # except:
+      # print("ERRRORRRRR")
+      # return
 
   def on_error(self, status):
       print (status)
