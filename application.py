@@ -7,7 +7,7 @@ from flask import Flask, render_template
 import certifi
 from requests_aws4auth import AWS4Auth
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 YOUR_ACCESS_KEY = "AKIAIFXS6NMDG6DNTGNQ"
 YOUR_SECRET_KEY = "lwVBol6OuS32W4DA+kasw5Qv8W5HfrKFCMC9g01W"
@@ -29,20 +29,20 @@ es = Elasticsearch(
   connection_class=RequestsHttpConnection
   )
 
-@app.route('/')
+@application.route('/')
 def index():
     return render_template('index.html')
 
 # Whenever there is a request to this with a key, we get back results from elastic search
-@app.route('/<key>')
+@application.route('/<key>')
 def search(key):
     result = es.search(index='test',doc_type="tweet",body={
-      "from":0, 
+      "from":0,
       "size":100,
       "query":{
         "match": {
           'text': {
-            "query":key, 
+            "query":key,
             "operator":"and"
             }
           }
@@ -58,5 +58,5 @@ def search(key):
 
 
 if __name__ == "__main__":
-    app.debug = True
-    app.run(port=8000)
+    application.debug = True
+    application.run(port=8000)
