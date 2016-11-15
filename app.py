@@ -163,7 +163,7 @@ def index():
 
 @app.route('/<key>')
 def search(key):
-    result = es.search(index='data',doc_type="tweet",body={"query":{"match": {'text': key}}})
+    result = es.search(index='test',doc_type="tweet",body={"query":{"match": {'text': key}}})
     print (result)
     data = json.dumps(result)
     for hit in result['hits']['hits']:

@@ -47,45 +47,46 @@ class StdOutListener(StreamListener):
     json_data=json.loads(doc_data)
     # try:
     data={}
-    print(json_data)
-    if json_data['coordinates'] is not None:
-      print ("got here2!!!")
-      # print(json_data)
-      data["coordinates"]= (json_data['coordinates']['coordinates'][0],json_data['coordinates']['coordinates'][1])
-      data["name"]=json_data['user']['name']
-      data["text"]=json_data['text']
-      data["created_at"]=json_data['created_at']
-      print ("printing data...\n")
-      print (data)
+    # print(json_data)
+    if json_data.get('coordinates') is not None:
+      try:
+        print ("got here2!!!")
+        # print(json_data)
+        data["coordinates"]= (json_data['coordinates']['coordinates'][0],json_data['coordinates']['coordinates'][1])
+        data["name"]=json_data['user']['name']
+        data["text"]=json_data['text']
+        data["created_at"]=json_data['created_at']
+        print ("printing data...\n")
+        print (data)
 
-      res = es.index(index="test", doc_type='tweet', body=data)
+        res = es.index(index="test", doc_type='tweet', body=str(data))
 
-      print(res['created'])
-      print ("hell oworld")
-      # res2 = es.get(index="test", doc_type='tweet')
-      # print ("printing {}".format("test"))
-    elif json_data['place'] is not None:
-      print ("got here2!!!")
-      # print(json_data)
-      data["coordinates"]= (json_data['place']['bounding_box']['coordinates'][0][0][0],json_data['place']['bounding_box']['coordinates'][0][0][1])
-      data["name"]=json_data['user']['name']
-      data["text"]=json_data['text']
-      data["created_at"]=json_data['created_at']
-      print ("printing data...\n")
-      print (data)
+        print(res['created'])
+        print ("hello world")
+      except:
+        pass
+        # res2 = es.get(index="test", doc_type='tweet')
+        # print ("printing {}".format("test"))
+    elif json_data.get('place') is not None:
+      try:
+        print ("got here2!!!")
+        # print(json_data)
+        data["coordinates"]= (json_data['place']['bounding_box']['coordinates'][0][0][0],json_data['place']['bounding_box']['coordinates'][0][0][1])
+        data["name"]=json_data['user']['name']
+        data["text"]=json_data['text']
+        data["created_at"]=json_data['created_at']
+        print ("printing data...\n")
+        print (data)
 
-      res = es.index(index="test", doc_type='tweet', body=data)
+        res = es.index(index="test", doc_type='tweet', body=data)
 
-      print(res['created'])
-      print ("hell oworld")
-      # res2 = es.get(index="test", doc_type='tweet')
-      # print ("printing {}".format("test"))
+        print(res['created'])
+        print ("hello world")
+      except:
+        pass
+
     else:
         return
-
-    # except:
-      # print("ERRRORRRRR")
-      # return
 
   def on_error(self, status):
       print (status)
@@ -97,5 +98,5 @@ def begin():
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     stream = Stream(auth, listener)
-    stream.filter(track=['haiku', 'poem', 'poetry', 'obama', 'clinton'])
+    stream.filter(track=['haiku', 'poem', 'poetry', 'obama', 'clinton', 'movie', 'review', 'food', 'film'])
 begin()
