@@ -20,9 +20,9 @@ host = 'search-mytweetmap-zvx2ulax7nvfnzu2dmpixdybqu.us-east-1.es.amazonaws.com'
 # es = Elasticsearch(host=host,port=443,use_ssl=True,ca_certs=certifi.where(),verify_certs=True)
 es = Elasticsearch(
   hosts=[{
-  'host': host,
-  'port': 443,
-}],
+    'host': host,
+    'port': 443,
+  }],
   http_auth=awsauth,
   use_ssl=True,
   verify_certs=True,
@@ -36,13 +36,24 @@ def index():
 # Whenever there is a request to this with a key, we get back results from elastic search
 @app.route('/<key>')
 def search(key):
-    result = es.search(index='test',doc_type="tweet",body={"query":{"match": {'text': key}}})
-    print (result)
-    data = json.dumps(result)
-    for hit in result['hits']['hits']:
-      print(hit)
-    # print (data.hits.hits)
-    print ("test")
+    result = es.search(index='test',doc_type="tweet",body={
+      "from":0, 
+      "size":100,
+      "query":{
+        "match": {
+          'text': {
+            "query":key, 
+            "operator":"and"
+            }
+          }
+        }
+      })
+    # print (result)
+    data = json.dumps(result['hits']['hits'])
+    # for hit in result['hits']['hits']:
+    #   print(hit)
+
+    print ("length", len(result['hits']['hits']))
     return data
 
 
