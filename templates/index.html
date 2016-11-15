@@ -7,16 +7,29 @@
         width: 80vw;
         left: 0;
        }
+
+       #dropdown {
+        font-size:20px;
+        width: 80vh;
+        margin: 10px;
+       }
     </style>
   </head>
   <body>
+    <center>
     <h3>Tweet Map App</h3>
     <select id="dropdown">
       <option value="obama">obama</option>
       <option value="trump">trump</option>
       <option value="clinton">clinton</option>
+      <option value="clinton">election</option>
+      <option value="clinton">happy trump</option>
+      <option value="clinton">sad trump</option>
+      <option value="clinton">happy clinton</option>
+      <option value="clinton">sad trump</option>
     </select>
     <div id="map"></div>
+    </center>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACGeO9TeMbOLSk1We5O5Yrh5FXnGUQSbs&callback=initMap">
     </script>
@@ -28,10 +41,13 @@
       var infowindow;
       var markers = [];
       var keyword;
+
       function initMap() {
-        var center = {lat: 0, lng: 0};
+        var center = {lat: 40.8075, lng: -73.9626}; //columbia u
+
+        // var center = {lat: 0, lng: 0};
         map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 2,
+          zoom: 3,
           center: center
         });
         document.getElementById("dropdown").onchange = function(){
@@ -42,8 +58,8 @@
       }
       function addContent(tweets){
           var myPosition = {lat: tweets.coordinates[1], lng: tweets.coordinates[0] };
-          var time = tweets.time;
-          var user = tweets.user;
+          var time = tweets.created_at;
+          var user = tweets.name;
           var text = tweets.text;
           var prev_infowindow = false;
           // API Reference: https://developers.google.com/maps/documentation/javascript/examples/infowindow-simple
@@ -56,7 +72,7 @@
           google.maps.event.addListener(marker, "click", function () {
                 if (infowindow) {infowindow.close();}
                 var contentString =  '<div id="content">'+'<div id="siteNotice">'+'</div>'+
-                          '<h1 id="firstHeading" class="Twitter message">Twitter message</h1>'+
+                          '<h1 id="firstHeading" class="Twitter message">tweet @ ' + time + '</h1>'+
                           '<div id="bodyContent">' + user + ' : '  +  text +'</div>'+'</div>';
                 infowindow = new google.maps.InfoWindow({
                   content: contentString
