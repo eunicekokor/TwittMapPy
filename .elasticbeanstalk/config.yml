@@ -1,0 +1,17 @@
+branch-defaults:
+  master:
+    environment: null
+    group_suffix: null
+environment-defaults:
+  tweetMapFinal-dev:
+    branch: master
+    repository: twitmapp
+global:
+  application_name: finalApp
+  branch: null
+  default_ec2_keyname: aws-eb
+  default_platform: python2.7
+  default_region: us-east-1
+  profile: eb-cli
+  repository: null
+  sc: git
